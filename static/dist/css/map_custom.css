@@ -1,0 +1,145 @@
+      #map {
+        height: 100%;
+        padding: 0;
+        margin-top: 50px;
+      }
+
+      #map_title {
+        color = red;
+        z-index: 10;
+      }
+
+      #slider {
+        position: absolute;
+        bottom: 40px;
+        right: 40px;
+        left:40px;
+        margin-bottom: 50px;
+      }
+
+      #legend {
+        font-family: "Helvetica", Georgia, Serif;
+        font-size: 27px;
+        position: absolute;
+        bottom: 80px;
+        left: 40px;
+        color: white;
+        margin-bottom: 50px;
+      }
+      #menu { position: absolute; 
+        top: 5px; 
+        right: 10px; 
+        width: 400px; 
+        height:60px; 
+        background: transparent; 
+        z-index:10;
+      }
+
+      #menu a { 
+        margin: 15px 10px 0 0;
+        float: right;
+        vertical-align: baseline;
+        width: auto;
+        padding: 10px;
+        text-align: center;
+        font: bold 11px "Helvetica",Arial;
+        line-height: normal;
+        color: #555;
+        border-radius: 4px;
+        border: 1px solid #777777;
+        background: #ffffff;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      #menu a.selected,
+      #menu a:hover { 
+        color: #F84F40;
+      }
+      svg {
+        font: 10px sans-serif;
+      }
+
+      circle {
+        -webkit-transition: fill-opacity 250ms linear;
+      }
+
+      .selecting circle {
+        fill-opacity: .2;
+      }
+
+      .selecting circle.selected {
+        stroke: #f00;
+      }
+
+      .resize path {
+        fill: #666;
+        fill-opacity: .8;
+        stroke: #000;
+        stroke-width: 1.5px;
+      }
+
+      .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+
+      .brush .extent {
+        fill-opacity: .125;
+        shape-rendering: crispEdges;
+      }
+
+      .container .text-muted {
+        margin-bottom: 0px;
+      }
+      .pac-item {
+        bottom: 100%;
+      }
+      #dropdown {
+        margin-right: 15px;
+      }
+      .leaflet-control-zoom-in, .leaflet-control-zoom-out{
+        visibility: hidden;
+      }
+      .navbar-custom a {
+        color: #fff;
+      }
+      .fa-play-circle:before {
+        content: "\f144";
+      }
+      #button1 {
+        margin-left: 50px;
+        width: 200px;
+        height: 25px;
+      }
+      #lower_info_box{
+          width:350px;
+          height:250px;
+          background-color:#000;
+          position: absolute;
+          bottom:110px;
+          right:0px;
+          z-index: 2;
+          font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;
+      }
+      #lower_info_box_text{
+        font-size: 20px;
+        padding-left: 15px;
+        padding-top: 15px;
+
+      }
+      #loading_box_show{
+          width:350px;
+          height:60px;
+          background-color:#000;
+          position: absolute;
+          left:0px;
+          z-index: 2;
+          font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;
+          bottom:110px;
+          font-size: 40px;
+          padding-left: 15px;
+      }
+      #loading_box_hidden{
+          visibility: hidden;
+      }

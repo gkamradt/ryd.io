@@ -1,0 +1,78 @@
+Documentation
+
+Python Libraries Used:
+bigquery.get_client, pandas, time, numpy, itertools, os.istdir, glob, os, rv_discrete, scipy.stats, re, requests, json, threading, Queue, rauth, BeautifulSoup
+
+
+Tech used:
+Big Query
+Python
+SQL
+
+Process
+
+MVP - Query one location:
+-Model
+--Download NYC Data set to local computer (30GB), the 30GB was partitioned into 12 parts
+--Do EDA with one of the 12 parts, realized that I was going to have to figure out another solution
+--Queried one location with a radius of about half a city block on the entire data set. Took 40min
+--Found the dataset already uploaded to bigquery, querying the same location took ~16seconds
+--Grouped all rides by date, dayofweek, and hour (separately)
+--Saw cycles on the year, hard seasonality for the week, and very distinct patterns during the day
+--Fit a SARIMAX model for the day-total information to predict number of rides for that location
+---With a prediction amount, then fit that amount onto the hourly distribution that was normalized.
+---This returned an estimate for a specific day and specific hour
+---used a uniform distribution to randomly assign a minute/second value in order to better spread out the rides
+--Used the previous rides for that location to fit a gaussian kde. Resampled from said KDE to get a geo prediction
+--Put actual rides/locations and predicted rides/location into one csv to plot online
+-Viz
+--Took my output of actuals rides/locations and predicted rides/locations to cartodb
+--used a cartodb backend to plot the points with a slider to show when they arrived
+--Used bootstrap as a template and put the cartodb map with it
+
+Part 2 - Clustering locations
+-Model
+--Wrote a script to place asynchronous to BigQuery and return ride information for a grid of 90/90 over Manhatten
+----Made the sql do all the work on googles end, this turned the query time from about 1.5 days to 1.5 hours
+--removed the points that didn't have more than 100 rides for the year. Some were over the water
+--Added average daily rides as another feature, considered not adding it
+--Clustered based off of an hourly distribution, dayofweek dist and total rides
+----Dabbled with dimentionality reduction, ultimately didn't use it after 
+------1. Good clustering results were already had
+------2. Dimentionality reduction didn't show sweet graphs like we wanted it to
+--Chose 11 clusters based off of the marginal decrease in score
+--Plotted areas of clusters
+--Provided a legend to show what the labels meant
+----Legend was a distribution of hourly/daily rides
+
+Presentation - Slides
+-Context
+--Interested in defining user behavior via geospatial movement
+--Description of the data set
+--Lots of popular models have focused on individual drivers
+----I was curious about looking at the city on an aggregate level
+-Process - Single Location
+--First run of the data took 40 minutes on our mac mini's
+--With this data we could build out a SARIMAX model to predict a given locations drop offs by date/hour
+----Seasonal ARIMA model for the daily estimate, hourly distribution sampling for the rides on the hour
+----Fitted the SARIMAX model by looking at the autoregressive and partial autoregressive trends
+-Results
+--Beautiful seasonality throughout the year, week and day
+--Fun to identify the weekly and hourly distribution for this section
+----Show graphs of a particular point
+--But what does the entire city look like?
+-Process - Clustering multiple locations
+--Drew out a grid of 90 x 90 points over manhattan (half a block to half a block), 8100 total
+--Queried bigquery asyncronously with all 8100 requests and created a maxtrix with the hourly/weekly distribution
+--With all 8100 points filtered out those that didn't meet a minium ride threshold
+--Clustered all points together with the normalized hourly/weekly distribution to find areas that had the same dropoff activity
+-Results
+--Show the money map and describe it on a high level
+--Highlight each section and then bring up a sweet looking graph showing the weekly and hourly distribution which is the mean of all the rides that got clustered to that
+----Make sure you talk about points that are near the clusters
+--Now we don't have to use an exact locations weekly/hourly dist...just use the cluster distribution that its assigned to
+--Finish with a torque map showing rides coming in for a particular location
+-Next Steps
+--Given a drop off location, can you visualize and cluster based off of where everyone came from?
+--Social graph of a city at a certain time period
+----Given real time data, "hey we are seeing a huge spike in activity over on polk...lets send our marketing street team out there and promote accordingly"

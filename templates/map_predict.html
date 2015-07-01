@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="../static/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/sticky-footer-navbar.css" rel="stylesheet">
+    <title>Ryd.io - Interactive Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="../static/dist/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    <link rel="stylesheet" href="../static/dist/css/map_custom.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <link rel="shortcut icon" type="image/ico" href="../static/favicon.ico" />
+  </head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-64693107-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  <body>
+    <div class="page-header">
+      <h1>1. Search NY Location Below</h1>
+      <h1>2. Enter Time to Predict</h1>
+      <h1>3. Predict Rides</h1>
+      <div class="page-para">
+      </div>
+    </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top navbar-fixed-top top-nav-collapse" role="navigation" style="padding: 0; border-bottom: 1px solid rgba(255,255,255,.3);
+  background-color: #000; text-transform: uppercase; font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="/#page-top">
+                    <i class="fa fa-play-circle"></i>  <span class="light">Start</span> Ryd
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="/cluster_map">Ryd Cluster Map</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="/map_predict">Predictive Map</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="/#about">About</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="/#view_on_github">View On GitHub</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="/#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <div id="map">
+      <div id="lower_info_box">
+        <div id="lower_info_box_text">
+          <span id="lower_info_box_text_date">Date: </span><br>
+          <span id="lower_info_box_text_rides">Rides Predicted: </span><br>
+          <span id="lower_info_box_text_clust">Nearest Cluster: </span><br>
+        </div>
+      </div>
+      <div id="loading_box_hidden">loading...</div>
+    </div>
+    <script>
+    var map1 = L.map('map').setView([40.728489, -73.992727], 13);
+
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 18,
+        id: 'gkamradt.mhlj750g',
+        accessToken: 'pk.eyJ1IjoiZ2thbXJhZHQiLCJhIjoiYjFjNDM2ZWY5NmJhYjQ5MjMzMjRlNTI3YWMzYzA4OTUifQ.aCudZVqCsDj65SHztO6swA'
+    }).addTo(map1);
+
+    var greenIcon = L.icon({
+        iconUrl: '../static/dist/img/mapmarker1.png',
+
+        iconSize:     [20, 20], // size of the icon
+        iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+        popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
+    
+
+    function onSubmitPress(data) {
+
+      $('.leaflet-marker-shadow').remove();
+      $('.leaflet-marker-icon').remove();
+      for (var i = 0; i < data['rides_predicted']['coordinates'].length; i++) {
+        marker = new L.marker([data['rides_predicted']['coordinates'][i][0], data['rides_predicted']['coordinates'][i][1]], {icon: greenIcon});
+        map1.addLayer(marker)
+      };
+
+      $('#lower_info_box_text_date').empty();
+      $('#lower_info_box_text_date').append("Rides Predicted: ", data['predict_date']);
+
+      $('#lower_info_box_text_rides').empty();
+      $('#lower_info_box_text_rides').append("Rides Predicted: ", data['rides_predicted_count']);
+
+      $('#lower_info_box_text_clust').empty();
+      $('#lower_info_box_text_clust').append("Nearest Cluster: #", data['nearest_cluster']);
+
+
+      $("#lower_info_box img:last-child").remove()
+      $('<img src="'+ data['cluster_img_path'] +'"+"style = "bottom: 0px;"">').load(function() {
+        $(this).width(350).height(150).appendTo('#lower_info_box');
+      });
+
+    };
+
+
+    </script>
+    
+    <div id="slider"></div>
+    <div id="legend"></div>
+ 
+    
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+    <script src="../static/dist/js/searchbar.js"></script>
+    <script>
+    </script>
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Search for Business
+        <input type="text" name="user_input" class="textbox" id="location" value="" placeholder="Business. . ." autocomplete="off">
+        Date Search
+        <select id="date_dropdown", name="Date">
+            <option value="0"> Today </option>
+            <option value="1"> Tomorrow </option>
+            <option value="2"> +2 days </option>
+            <option value="3"> +3 days </option>
+            <option value="4"> +4 days </option>
+        </select>
+        Hour
+        <select id="hour_dropdown", name="Hour">
+            <option value="0"> 12am-1am </option>
+            <option value="1"> 1am-2am </option>
+            <option value="2"> 2am-3am </option>
+            <option value="3"> 3am-4am </option>
+            <option value="4"> 4am-5am </option>
+            <option value="5"> 5am-6am </option>
+            <option value="6"> 6am-7am </option>
+            <option value="7"> 7am-8am </option>
+            <option value="8"> 8am-9am </option>
+            <option value="9"> 9am-10am </option>
+            <option value="10"> 10am-11am </option>
+            <option value="11"> 11am-12pm </option>
+            <option value="12"> 12pm-1pm </option>
+            <option value="13"> 1pm-2pm </option>
+            <option value="14"> 2pm-3pm </option>
+            <option value="15"> 3pm-4pm </option>
+            <option value="16"> 4pm-5pm </option>
+            <option value="17"> 5pm-6pm </option>
+            <option value="18"> 6pm-7pm </option>
+            <option value="19"> 7pm-8pm </option>
+            <option value="20"> 8pm-9pm </option>
+            <option value="21"> 9pm-10pm </option>
+            <option value="22"> 10pm-11pm </option>
+            <option value="23"> 11pm-12pm </option>
+        </select>
+
+        <button id="button1" type="submit" value="Press here" class="text-center" onClick="sendToFlask()">Predict Rides</botton>
+        </p>
+
+      </div>
+
+    </footer>
+    <div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+      <script>
+
+      //Autocomplete variables
+      var input = document.getElementById('location');
+      // var searchform = document.getElementById('form1');
+      var submit_button = document.getElementById('form1');
+      var place;
+
+      var defaultBounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(40.700629, -74.019562),
+      new google.maps.LatLng(40.766578, -73.947293));
+
+      var options = {
+      // bounds: hyderabadBounds,
+      bounds: defaultBounds,
+      types:  ['establishment'],
+      componentRestrictions: { country: 'us' }
+      };
+
+      var autocomplete = new google.maps.places.Autocomplete(input, options);
+   
+      //Google Map variables
+      var map;
+      var marker;
+   
+      //Add listener to detect autocomplete selection
+      google.maps.event.addListener(autocomplete, 'place_changed', function () {
+          place = autocomplete.getPlace();
+          console.log(place.name);
+          console.log(place.geometry.location.lat(),place.geometry.location.lng());
+          map1.setView(new L.LatLng(place.geometry.location.lat(), place.geometry.location.lng()), 18);
+      });
+
+      
+
+      //Add listener to search
+      // searchform.addEventListener("submit", function() {
+      //   console.log("you clicked the press here")
+      //     var newlatlong = new google.maps.LatLng(place.geometry.location.lat(),place.geometry.location.lng());
+      //     console.log(newlatlong);
+      //     map.setCenter(newlatlong);
+      //     marker.setPosition(newlatlong);
+      //     map.setZoom(12);
+   
+      // });
+       
+      //Reset the inpout box on click
+      // input.addEventListener('click', function(){
+      //     input.value = "";
+      // });
+   
+   
+   
+      // function initialize() {
+      //   var myLatlng = new google.maps.LatLng(51.517503,-0.133896);
+      //   var mapOptions = {
+      //     zoom: 1,
+      //     center: myLatlng
+      //   }
+      //   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+   
+      //   marker = new google.maps.Marker({
+      //       position: myLatlng,
+      //       map: map,
+      //       title: 'Main map'
+      //   });
+      // }
+   
+      // google.maps.event.addDomListener(window, 'load', initialize);
+   
+    function sendToFlask() {
+      $("#loading_box_hidden").attr("id", "loading_box_show");
+       var newlatlong = new google.maps.LatLng(place.geometry.location.lat(),place.geometry.location.lng());
+       lat = newlatlong['A'];
+       long_ = newlatlong['F'];
+       var lat_long = [lat, long_];
+
+
+       days_from_today_select = $('#date_dropdown').val();
+       hour_select = $('#hour_dropdown').val();
+       console.log(lat_long);
+       console.log(days_from_today_select);
+       console.log(hour_select);
+       $.ajax({
+           url: '/userinput',
+           data: JSON.stringify({"lat_long": lat_long, "hour_select" : hour_select, "date_select" : days_from_today_select }),
+           type: "POST",
+           contentType: "application/json",
+           traditional: true,
+           success: function (data) {
+              $("#loading_box_show").attr("id", "loading_box_hidden");
+              map1.setView(new L.LatLng(lat_long[0], lat_long[1]), 18);
+              console.log(data['rides_predicted_count']);
+              onSubmitPress(data);
+              
+           },
+           'error': function (request, status, error) {
+               console.log('Oh no!! Something went wrong.');
+           }
+       });
+   }
+
+      </script>
+    </div>
+  </body>
+</html>
