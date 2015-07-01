@@ -28,7 +28,7 @@ Knowing how many rides will land in a day is great, but we really would like to 
 
 But where do we put the points on the map? We can't just put them randomly anywhere in our bounding box...some of them might land on top of buildings...not great. In order to adjust for this we will use a multivariate KDE that randomly resamples from a distrubtion that was built off of where rides appeared in the past. Basically we are saying..."hey Ryd, where have all the rides landed for this location the past? Now if you were to guess where these rides would arrive this time where would it be?"
 
-![alt text](http://i.imgur.com/7wqMxef.png "Logo Title Text 1")
+![alt text](http://i.imgur.com/BcA8MPP.jpg)
 
 ####Project Pipeline
 
@@ -70,7 +70,4 @@ threading
 Queue
 rauth
 BeautifulSoup
-
-word2vec, technical details
-hexbin maps
-Yelp API
+Matplotlib.pyplot
