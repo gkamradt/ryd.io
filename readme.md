@@ -54,20 +54,20 @@ Once we're ready, we can easily incorporate other data sources as well. It would
 
 ####Packages used
 
-bigquery for python
-pandas
-time
-numpy
-itertools
-os.istdir
-glob
-os
-rv_discrete
-scipy.stats
-requests
-json
-threading
-Queue
-rauth
-BeautifulSoup
-Matplotlib.pyplot
+* bigquery for python
+* pandas
+* time
+* numpy
+* itertools
+* os.istdir
+* glob
+* os
+* rv_discrete
+* scipy.stats
+* requests
+* json
+* threading
+* Queue
+* rauth
+* BeautifulSoup
+* Matplotlib.pyplot
