@@ -10,9 +10,9 @@ from time import strftime
 app = Flask(__name__)
 app.business_location = None
 app.previous_location_request = None
-app.bq = BigQuery(project_id='NYCTAXI-GALVANIZE', \
-            service_account='902100088588-tn6b9tm2g2edobtf3s1m5uemn0u9kkoo@developer.gserviceaccount.com', \
-            key_location='../../../gkey/NYCTAXI-GALVANIZE-111e38f81867.p12')
+app.bq = BigQuery(project_id='###', \
+            service_account='###', \
+            key_location='###')
 app.cluster_img_dict = {0:'static/dist/img/cluster_0.jpg',\
                         1:'static/dist/img/cluster_1.jpg',\
                         2:'static/dist/img/cluster_2.jpg',\
