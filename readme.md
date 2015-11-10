@@ -2,7 +2,11 @@
 
 Gregory Kamradt, July 2015
 
-Updated Slides, 11/10/15 - https://docs.google.com/presentation/d/1MCP4KJOoKbbEpnRCf_mdxbVFt5uz5_d5y45qmpdjaZ0/edit?usp=sharing
+#####Updated 11/10/15 
+Slides - https://docs.google.com/presentation/d/1MCP4KJOoKbbEpnRCf_mdxbVFt5uz5_d5y45qmpdjaZ0/edit?usp=sharing
+Site - http://ryd.io/
+Technical Summary - http://ryd.io/technical_summary
+
 
 ####Overview
 
