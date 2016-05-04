@@ -14,7 +14,7 @@ Technical Summary - http://ryd.io/technical_summary
 
 View the app live at Ryd.io
 
-The idea of this project is to allow a user, or marketing lead, to explore and learn about a city from the frequency and volumne of taxi drop off points to focus marketing efforts. My goal was to provide an alternative view of a city that has been clustered into subgroups outlining different weekly and daily ride distributions.
+The idea of this project is to allow a user, or marketing lead, to explore and learn about a city from the frequency and volume of taxi drop off points to focus marketing efforts. My goal was to provide an alternative view of a city that has been clustered into subgroups outlining different weekly and daily ride distributions.
 
 ####Example
 
